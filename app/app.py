@@ -135,7 +135,11 @@ def generate_stream(id):
         for chunk in challenge["module"].generate_response_stream(prompt):
             yield f"data:{json.dumps({'text': chunk})}\n\n"
 
-    return Response(generate(), content_type="text/event-stream")
+    return Response(
+        generate(),
+        content_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    )
 
 @app.route('/api/<id>/upload', methods=['POST'])
 def upload_file(id):
@@ -228,4 +232,4 @@ def llm6_reset_db():
 
 if __name__ == "__main__":
     print("🌟 Main app running on http://localhost:8000")
-    app.run(debug=True, port=8000)
+    app.run(debug=True, port=8000, threaded=True)
